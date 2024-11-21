@@ -10,6 +10,8 @@ All data must be in data directory
 
 MusDB data shall be in musdb directory, ccMixter - in ccmixter_corpus
 
+Construction of musdb and ccmixter_corpus must be as in original dataset
+
 ## Dependencies
 
 Use python 3.12
