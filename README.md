@@ -4,6 +4,12 @@
 
 - Python package to generate vocal and instrumental tracks from original mix
 
+## Data Structure for training/testing
+
+All data must be in data directory
+
+MusDB data shall be in musdb directory, ccMixter - in ccmixter_corpus
+
 ## Dependencies
 
 Use python 3.12
