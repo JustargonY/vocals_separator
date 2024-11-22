@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 - library interface
 - mocked functions
-- data preprocessing and loading using tf.data.Dataset (50% done)
+- data preprocessing and loading using tf.data.Dataset (DONE)
 - model training
 - model output further processing (concatenating etc.)
 - output evaluation (including Spleeter comparison)
