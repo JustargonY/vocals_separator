@@ -1,5 +1,6 @@
 import os
 import scipy.io.wavfile as wav
+import numpy as np
 from scipy.signal import stft, istft
 from .dataset import SAMPLE_RATE
 
@@ -21,17 +22,23 @@ def write_track(data, filepath=None) -> None:
     wav.write(filepath, SAMPLE_RATE, data)
 
 
-def combine_prediction_outputs():
+def combine_prediction_outputs(outputs):
     """
-    connects all binary vectors from model output into one mask
-    :return:
-    """
+    Connects all binary vectors from model output into one mask
 
-def apply_mask():
+    :return: np.stack(outputs)
     """
-    applies binary mask on mix
-    :return:
+    return np.stack(outputs)
+
+
+def apply_mask(mixture_spectrogram, binary_mask):
     """
+    Applies binary mask on the mix.
+
+    :return: a (vocal,  instrumental) tuple of 2D arrays (spectrograms)
+    """
+    vocals = mixture_spectrogram * binary_mask
+    return vocals, mixture_spectrogram - vocals
 
 
 def _get_inverse_mask(mask):
