@@ -1,4 +1,5 @@
 SAMPLE_RATE = 44100
+SIGNAL_NORMALIZATION_CONSTANT = 32767
 
 class ImmutableDict(dict):
     """

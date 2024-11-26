@@ -1,7 +1,7 @@
 import scipy.io.wavfile as wav
 import numpy as np
 from scipy.signal import stft
-from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS
+from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS, SIGNAL_NORMALIZATION_CONSTANT
 
 
 class UnsupportedWavFileException(Exception):
@@ -15,7 +15,8 @@ def read_track(file_path: str) -> np.ndarray:
     """
     Reads a wav file into a numpy array using the scipy.io.wavfile.read function.
     Asserts that the sample rate is correct and that there are 2 audio channels.
-    Returns just the data array. 
+    Normalizes the signal by dividing it by the `SIGNAL_NORMALIZATION_CONSTANT`.
+    Returns just the data array.
 
     :param file_path: path to the wav file
     :returns: An array of shape (N_samples, 2) containing signal data of both audio channels
@@ -34,7 +35,7 @@ def read_track(file_path: str) -> np.ndarray:
         raise UnsupportedWavFileException(
             f"Cannot load file: expected 2 audio channels, found {audio.shape[1]}.")
 
-    return audio.astype(np.float32)
+    return audio.astype(np.float32) / SIGNAL_NORMALIZATION_CONSTANT
 
 
 

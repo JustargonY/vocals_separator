@@ -2,13 +2,14 @@ import os
 import scipy.io.wavfile as wav
 import numpy as np
 from scipy.signal import istft
-from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS
+from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS, SIGNAL_NORMALIZATION_CONSTANT
 
 
 def write_track(data, filepath=None) -> None:
     """
     Writes track into file. A convenience function that calls `scipy.io.wavfile.write` with
     the sample rate of 44100Hz (equal to the sample rate of all tracks used in model training).
+    Multiplies the signal data by SIGNAL_NORMALIZATION_CONSTANT
 
     :param data: an array of shape (N_samples, N_channels); N_channels should in our case
                     be generally equal to 2, but no checks are made
@@ -19,7 +20,7 @@ def write_track(data, filepath=None) -> None:
     if filepath is None:
         filepath = os.path.join(os.getcwd(), "output.wav")
 
-    wav.write(filepath, SAMPLE_RATE, data)
+    wav.write(filepath, SAMPLE_RATE, data * SIGNAL_NORMALIZATION_CONSTANT)
 
 
 def combine_prediction_outputs(outputs):
