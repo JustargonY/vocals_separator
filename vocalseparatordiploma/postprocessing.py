@@ -43,8 +43,8 @@ def apply_mask(mixture_spectrogram, binary_mask):
 
 def _get_inverse_mask(mask):
     """
-    reverse 0 and 1 in mask
-    used to get instrumental mask from vocal mask
+    Reverse 0 and 1 in mask.
+    Used to get instrumental mask from vocal mask.
 
     :return: 1 - mask
     """

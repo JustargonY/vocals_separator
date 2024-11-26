@@ -34,7 +34,7 @@ def predict_mocked(spectrogram):
     return random_guess.astype(np.float32)
 
 
-def predict_signal(input_signal, **stft_params) -> tuple[np.ndarray, np.ndarray]:
+def predict_signal(input_signal: np.ndarray, **stft_params) -> tuple[np.ndarray, np.ndarray]:
     """
     Takes signal data from a wav file as input, returns a (vocal, instrumental) tuple
     of signal data, which can be saved to a wav file.
