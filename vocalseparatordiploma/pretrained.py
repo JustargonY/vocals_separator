@@ -2,9 +2,7 @@
 
 import numpy as np
 from scipy.signal import stft, istft
-
-
-SAMPLE_RATE = 44100
+from .dataset import SAMPLE_RATE
 
 
 def get_windows_for_one_chanel(spectrogram, window_size=5):
