@@ -1,7 +1,7 @@
 import os
 import scipy.io.wavfile as wav
 import numpy as np
-from scipy.signal import stft, istft
+from scipy.signal import istft
 from .dataset import SAMPLE_RATE
 
 
@@ -45,6 +45,7 @@ def _get_inverse_mask(mask):
     """
     reverse 0 and 1 in mask
     used to get instrumental mask from vocal mask
+    
     :return: 1 - mask
     """
     return 1 - mask

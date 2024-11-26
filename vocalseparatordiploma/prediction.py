@@ -1,25 +1,30 @@
+import numpy as np
+
+
 def load_model():
     """
-    loads prediction model from file system
-    :return:
+    Loads prediction model from the file system into memory.
+
+    :return: the model
     """
-    pass
 
 
 # should invoke load_model at the start
 
 
-def predict():
+def predict(spectrogram):
     """
-    calls model.predict()
+    Calls model.predict()
+
     :return:
     """
-    pass
 
 
-def predict_mocked():
+def predict_mocked(spectrogram):
     """
-    mocked version of _predict, returns random 0-1 vectors
+    Mocked version of _predict, returns random 0-1 vectors.
+
     :return:
     """
-    pass
+    random_guess = np.random.uniform(0, 1, spectrogram.shape[0] * spectrogram.shape[1]) > 0.5
+    return random_guess.astype(np.float32)

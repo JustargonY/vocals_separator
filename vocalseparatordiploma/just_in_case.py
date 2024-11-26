@@ -1,18 +1,9 @@
-"""This submodule exposes an API for the trained model."""
+"""Are we going to need this???"""
 
 import numpy as np
 from scipy.signal import stft, istft
 from .dataset import SAMPLE_RATE
-
-
-def get_windows_for_one_chanel(spectrogram, window_size=5):
-    """A generator returning windows of the given width. The edges are padded with zeros."""
-    spectrum_width, length = spectrogram.shape
-    zeros_for_window = np.zeros((window_size // 2, spectrum_width))
-    data_for_windows = np.concatenate([zeros_for_window, spectrogram.T, zeros_for_window])
-
-    for i in range(length):
-        yield data_for_windows[i:i+window_size]
+from .preprocessing import generate_windows
 
 
 def transform_track_stft(signal, sample_rate=SAMPLE_RATE, nperseg=2048, noverlap=1024):
@@ -32,7 +23,7 @@ def predict_for_window(window):
 
 def predict_binary_mask(spectrogram) -> np.ndarray:
     """Returns a binary mask to be applied to the spectrogram."""
-    windows = get_windows_for_one_chanel(spectrogram)
+    windows = generate_windows(spectrogram)
     results = np.zeros(spectrogram.shape)
 
     for idx, window in enumerate(windows):
@@ -44,7 +35,7 @@ def predict_binary_mask(spectrogram) -> np.ndarray:
 def predict(input_signal, **stft_params):
     """
     Takes signal data from a wav file as input, returns a (vocal, instrumental) tuple
-    of signal data, which can be saved to a wav file
+    of signal data, which can be saved to a wav file.
     """
     freq, times, left, right = transform_track_stft(input_signal, **stft_params)
 
