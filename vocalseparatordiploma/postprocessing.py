@@ -2,7 +2,7 @@ import os
 import scipy.io.wavfile as wav
 import numpy as np
 from scipy.signal import istft
-from .dataset import SAMPLE_RATE
+from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS
 
 
 def write_track(data, filepath=None) -> None:
@@ -45,20 +45,22 @@ def _get_inverse_mask(mask):
     """
     reverse 0 and 1 in mask
     used to get instrumental mask from vocal mask
-    
+
     :return: 1 - mask
     """
     return 1 - mask
 
 
-def compute_inverse_stft(spectrogram, *args, **kwargs):
+def compute_inverse_stft(spectrogram, **kwargs):
     """
     Computes inverse STFT of a 2D array, returning the original signal.
     A convienience function, calls scipy.signal.istft.
+    The defaults are in STFT_DEFAULT_PARAMETERS, a dictionary in constants.py
 
     :param spectrogram: the 2D array to transform
-    :param args: other parameters used by scipy.signal.istft
     :param kwargs: other parameters used by scipy.signal.istft
     :return:
     """
-    return istft(spectrogram, *args, **kwargs)
+    kwargs = STFT_DEFAULT_PARAMETERS | kwargs
+    _, signal = istft(spectrogram, **kwargs)
+    return signal

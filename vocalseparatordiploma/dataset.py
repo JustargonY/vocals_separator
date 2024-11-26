@@ -5,8 +5,6 @@ This module handles loading data from the MUSDB18 and ccMixter datasets.
 import os
 import tensorflow as tf
 
-# the audio sample rate, common for both datasets
-SAMPLE_RATE = 44100
 
 def musdb18_get_file_names(dataset_path: str, train_test="train") -> tf.data.Dataset:
     """

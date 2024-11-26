@@ -1,7 +1,7 @@
 import scipy.io.wavfile as wav
 import numpy as np
 from scipy.signal import stft
-from .dataset import SAMPLE_RATE
+from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS
 
 
 class UnsupportedWavFileException(Exception):
@@ -28,9 +28,9 @@ def read_track(file_path: str) -> np.ndarray:
             "Cannot load file: audio files for processing must have a sample rate of "
             f"{SAMPLE_RATE}. Sample rate of {file_path} is {sample_rate}."
             )
-    elif audio.ndim < 2:
+    if audio.ndim < 2:
         raise UnsupportedWavFileException("Cannot load file: expected 2 audio channels, found 1.")
-    elif audio.shape[1] != 2:
+    if audio.shape[1] != 2:
         raise UnsupportedWavFileException(
             f"Cannot load file: expected 2 audio channels, found {audio.shape[1]}.")
 
@@ -38,16 +38,17 @@ def read_track(file_path: str) -> np.ndarray:
 
 
 
-def compute_stft(signal, *args, **kwargs):
+def compute_stft(signal, **kwargs):
     """
     Applies STFT on the signal. A convienience function that calls scipy.signal.stft.
 
     :param signal: a 1D array containing signal data for a single channel
-    :param args: parameters for scipy.signal.stft
     :param kwargs: parameters for scipy.signal.stft
     :return: The spectrogram
     """
-    return stft(signal, *args, **kwargs)
+    kwargs = STFT_DEFAULT_PARAMETERS | kwargs
+    _, _, transformed = stft(signal, **kwargs)
+    return transformed
 
 
 def generate_windows(spectrogram, window_size=5):
