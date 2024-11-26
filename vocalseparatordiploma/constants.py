@@ -22,7 +22,7 @@ class ImmutableDict(dict):
 
 STFT_DEFAULT_PARAMETERS = ImmutableDict({
     "fs": SAMPLE_RATE,
-    "nperseg": 2048,
-    "noverlap": 1024,
+    "nperseg": 1024,
+    "noverlap": 512,
     "window": "hamming"
     })
