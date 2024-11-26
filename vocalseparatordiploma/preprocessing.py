@@ -65,11 +65,11 @@ def generate_windows(spectrogram, window_size=5):
     :return: a generator object yielding arrays of shape (N_frequencies, window_size)
     """
     spectrum_width, length = spectrogram.shape
-    zeros_for_window = np.zeros((window_size // 2, spectrum_width))
-    data_for_windows = np.concatenate([zeros_for_window, spectrogram.T, zeros_for_window])
+    zeros_for_window = np.zeros((spectrum_width, window_size // 2))
+    data_for_windows = np.concatenate([zeros_for_window, spectrogram, zeros_for_window], 1)
 
     for i in range(length):
-        yield data_for_windows[i:i+window_size]
+        yield data_for_windows[:, i:i+window_size]
 
 
 def get_ideal_binary_mask(mixture_spectrogram, vocals_spectrogram, cutoff=0.8):
