@@ -20,9 +20,9 @@ def read_track(file_path: str) -> np.ndarray:
     :param file_path: path to the wav file
     :returns: An array of shape (N_samples, 2) containing signal data of both audio channels
     """
-    # sr is the sample rate of the audio file
     sample_rate, audio = wav.read(file_path)
 
+    # exceptions in case the file format is different than expected
     if sample_rate != SAMPLE_RATE:
         raise UnsupportedWavFileException(
             "Cannot load file: audio files for processing must have a sample rate of "
@@ -41,9 +41,10 @@ def read_track(file_path: str) -> np.ndarray:
 def compute_stft(signal, **kwargs):
     """
     Applies STFT on the signal. A convienience function that calls scipy.signal.stft.
+    For default parameters see `STFT_DEFAULT_PARAMETERS` in module constants.
 
     :param signal: a 1D array containing signal data for a single channel
-    :param kwargs: parameters for scipy.signal.stft
+    :param kwargs: parameters for `scipy.signal.stft`
     :return: The spectrogram
     """
     kwargs = STFT_DEFAULT_PARAMETERS | kwargs

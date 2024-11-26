@@ -7,7 +7,7 @@ from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS
 
 def write_track(data, filepath=None) -> None:
     """
-    Writes track into file. A convenience function that calls scipy.io.wavfile.write with
+    Writes track into file. A convenience function that calls `scipy.io.wavfile.write` with
     the sample rate of 44100Hz (equal to the sample rate of all tracks used in model training).
 
     :param data: an array of shape (N_samples, N_channels); N_channels should in our case
@@ -54,8 +54,8 @@ def _get_inverse_mask(mask):
 def compute_inverse_stft(spectrogram, **kwargs):
     """
     Computes inverse STFT of a 2D array, returning the original signal.
-    A convienience function, calls scipy.signal.istft.
-    The defaults are in STFT_DEFAULT_PARAMETERS, a dictionary in constants.py
+    A convienience function, calls `scipy.signal.istft`.
+    The defaults are in `STFT_DEFAULT_PARAMETERS`, a dictionary in `constants.py`
 
     :param spectrogram: the 2D array to transform
     :param kwargs: other parameters used by scipy.signal.istft
