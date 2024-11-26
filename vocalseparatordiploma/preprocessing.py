@@ -70,9 +70,15 @@ def generate_windows(spectrogram, window_size=5):
         yield data_for_windows[i:i+window_size]
 
 
-def get_ideal_binary_mask():
+def get_ideal_binary_mask(mixture_spectrogram, vocals_spectrogram, cutoff=0.8):
     """
-    generates IBM from mix and vocals
-    :return:
+    Creates a binary mask, where 1 means vocals are dominant, and 0 means the accompaniment
+    is dominant. More specifically, the binary mask has a 1, if vocals > (mix * cutoff), where
+    0.5 <= cutoff < 1.
+
+    :param mixture_spectrogram: obtained from the mix through STFT
+    :param vocals_spectrogram: obtained from the true vocals-only recording
+    :return: A binary mask - an array containing only 1s and 0s of the same shape as
+                    mixture_spectrogram
     """
-    # ?????????????? what is this supposed to be doing
+    return np.where(vocals_spectrogram > mixture_spectrogram * cutoff, 1, 0)
