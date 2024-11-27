@@ -53,7 +53,7 @@ def compute_stft(signal, **kwargs):
     return transformed
 
 
-def generate_windows(spectrogram, window_size=5):
+def generate_windows(spectrogram, window_size=25):
     """
     A generator returning windows of the given width.
     For output number i the i-th frame is in the center of the window.
