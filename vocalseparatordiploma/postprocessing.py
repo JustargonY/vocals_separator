@@ -1,57 +1,67 @@
-import numpy as np
+import os
 import scipy.io.wavfile as wav
-from scipy.signal import stft, istft
+import numpy as np
+from scipy.signal import istft
+from .constants import SAMPLE_RATE, STFT_DEFAULT_PARAMETERS, SIGNAL_NORMALIZATION_CONSTANT
 
 
-def write_track(audio_path: str, sr: int, signal: np.array):
+def write_track(data, filepath=None) -> None:
     """
-    writes track into file
+    Writes track into file. A convenience function that calls `scipy.io.wavfile.write` with
+    the sample rate of 44100Hz (equal to the sample rate of all tracks used in model training).
+    Multiplies the signal data by SIGNAL_NORMALIZATION_CONSTANT
+
+    :param data: an array of shape (N_samples, N_channels); N_channels should in our case
+                    be generally equal to 2, but no checks are made
+    :param filepath: string or open file handle; if None defaults to "output.wav" in the current
+                    working directory
     """
-    wav.write(audio_path, sr, signal.astype(np.int16))
+
+    if filepath is None:
+        filepath = os.path.join(os.getcwd(), "output.wav")
+
+    wav.write(filepath, SAMPLE_RATE, data * SIGNAL_NORMALIZATION_CONSTANT)
 
 
-def get_mocked_mask(zxx):
+def combine_prediction_outputs(outputs):
     """
-    mocked function to generate mask (originally prediction output)
-    :return: binary mask as np.array
+    Connects all binary vectors from model output into one mask
+
+    :return: np.stack(outputs)
     """
-    return np.zeros(zxx.shape)
+    return np.stack(outputs)
 
 
-def combine_prediction_outputs():
+def apply_mask(mixture_spectrogram, binary_mask):
     """
-    connects all binary vectors from model output into one mask
+    Applies binary mask on the mix.
+
+    :return: a (vocal,  instrumental) tuple of 2D arrays (spectrograms)
+    """
+    vocals = mixture_spectrogram * binary_mask
+    return vocals, mixture_spectrogram - vocals
+
+
+def _get_inverse_mask(mask):
+    """
+    Reverse 0 and 1 in mask.
+    Used to get instrumental mask from vocal mask.
+
+    :return: 1 - mask
+    """
+    return 1 - mask
+
+
+def compute_inverse_stft(spectrogram, **kwargs):
+    """
+    Computes inverse STFT of a 2D array, returning the original signal.
+    A convienience function, calls `scipy.signal.istft`.
+    The defaults are in `STFT_DEFAULT_PARAMETERS`, a dictionary in `constants.py`
+
+    :param spectrogram: the 2D array to transform
+    :param kwargs: other parameters used by scipy.signal.istft
     :return:
     """
-    pass
-
-
-def apply_mask(zxx: np.array, mask: np.array):
-    """
-    applies binary mask on mix
-    :return: mixes as np.array
-    """
-    instr_mask = _get_inverse_mask(mask)
-    vocals = zxx * mask
-    instrumental = zxx * instr_mask
-    return vocals, instrumental
-
-
-def _get_inverse_mask(mask: np.array):
-    """
-    reverse 0 and 1 in binary mask
-    used to get instrumental mask from vocal mask
-    :return: inversed mask as np.array
-    """
-    return (mask == 0).astype(np.int32)
-
-
-def compute_inverse_stft(sr: int, zxx_l: np.array, zxx_r: np.array):
-    """
-    computes inverse STFT of signal
-    :return: istft of left and right channels as np.array
-    """
-    _, istft_l = istft(zxx_l, fs=sr, nperseg=1024, noverlap=512)
-    _, istft_r = istft(zxx_r, fs=sr, nperseg=1024, noverlap=512)
-    res = (np.stack((istft_l, istft_r), axis=-1) * 32768).astype(np.int16)
-    return res
+    kwargs = STFT_DEFAULT_PARAMETERS | kwargs
+    _, signal = istft(spectrogram, **kwargs)
+    return signal
