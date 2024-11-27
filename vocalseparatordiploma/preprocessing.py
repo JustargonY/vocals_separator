@@ -38,7 +38,6 @@ def read_track(file_path: str) -> np.ndarray:
     return audio.astype(np.float32) / SIGNAL_NORMALIZATION_CONSTANT
 
 
-
 def compute_stft(signal, **kwargs):
     """
     Applies STFT on the signal. A convienience function that calls scipy.signal.stft.

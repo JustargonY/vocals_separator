@@ -15,7 +15,7 @@ def load_model():
 # should invoke load_model at the start
 
 
-def predict(spectrogram):
+def predict(spectrogram: np.array):
     """
     Calls model.predict()
 
@@ -24,14 +24,24 @@ def predict(spectrogram):
     # TODO
 
 
-def predict_mocked(spectrogram):
+def predict_mocked(spectrogram: np.array):
     """
     Mocked version of _predict, returns random 0-1 vectors.
 
     :return:
     """
-    random_guess = np.random.uniform(0, 1, spectrogram.shape[0] * spectrogram.shape[1]) > 0.5
+    random_guess = np.random.uniform(0, 1, spectrogram.shape) > 0.5
     return random_guess.astype(np.float32)
+
+
+def _get_inverse_mask(mask: np.array):
+    """
+    Reverse 0 and 1 in mask.
+    Used to get instrumental mask from vocal mask.
+
+    :return: 1 - mask
+    """
+    return 1 - mask
 
 
 def predict_signal(input_signal: np.ndarray, **stft_params) -> tuple[np.ndarray, np.ndarray]:
@@ -46,13 +56,22 @@ def predict_signal(input_signal: np.ndarray, **stft_params) -> tuple[np.ndarray,
     left = compute_stft(input_signal[:, 0], **stft_params)
     right = compute_stft(input_signal[:, 1], **stft_params)
 
-    mask_left = predict(left)
-    mask_right = predict(right)
+    # mask_left = predict(left)
+    # mask_right = predict(right)
+
+    mask_left = predict_mocked(left)
+    mask_right = predict_mocked(right)
+
+    mask_left_instr = _get_inverse_mask(mask_left)
+    mask_right_instr = _get_inverse_mask(mask_right)
 
     vocal = np.stack((
         compute_inverse_stft(np.where(mask_left, left, 0), **stft_params),
-        compute_inverse_stft(np.where(mask_right, right, 0), **stft_params)
-    ))
-    instrumental = input_signal - vocal
+        compute_inverse_stft(np.where(mask_right, right, 0), **stft_params),
+    ), axis=1)
+    instrumental = np.stack((
+        compute_inverse_stft(np.where(mask_left_instr, left, 0), **stft_params),
+        compute_inverse_stft(np.where(mask_right_instr, right, 0), **stft_params),
+    ), axis=1)
 
     return vocal, instrumental

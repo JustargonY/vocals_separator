@@ -20,7 +20,7 @@ def write_track(data, filepath=None) -> None:
     if filepath is None:
         filepath = os.path.join(os.getcwd(), "output.wav")
 
-    wav.write(filepath, SAMPLE_RATE, data * SIGNAL_NORMALIZATION_CONSTANT)
+    wav.write(filepath, SAMPLE_RATE, (data * SIGNAL_NORMALIZATION_CONSTANT).astype(np.int16))
 
 
 def combine_prediction_outputs(outputs):
@@ -40,16 +40,6 @@ def apply_mask(mixture_spectrogram, binary_mask):
     """
     vocals = mixture_spectrogram * binary_mask
     return vocals, mixture_spectrogram - vocals
-
-
-def _get_inverse_mask(mask):
-    """
-    Reverse 0 and 1 in mask.
-    Used to get instrumental mask from vocal mask.
-
-    :return: 1 - mask
-    """
-    return 1 - mask
 
 
 def compute_inverse_stft(spectrogram, **kwargs):
