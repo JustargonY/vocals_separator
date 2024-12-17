@@ -1,6 +1,6 @@
-import vocalseparatordiploma.preprocessing as preprocessing
-import vocalseparatordiploma.prediction as prediction
-import vocalseparatordiploma.postprocessing as postprocessing
+from vocalseparatordiploma import preprocessing
+from vocalseparatordiploma import prediction
+from vocalseparatordiploma import postprocessing
 
 
 def separate(mix_path: str, vocals_path: str, instrumental_path: str):

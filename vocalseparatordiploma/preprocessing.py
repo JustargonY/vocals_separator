@@ -52,7 +52,7 @@ def compute_stft(signal, **kwargs):
     return transformed
 
 
-def generate_windows(spectrogram, window_size=25):
+def generate_windows(spectrogram, window_size: int = 31, batch_size: int = 4):
     """
     A generator returning windows of the given width.
     For output number i the i-th frame is in the center of the window.
@@ -61,14 +61,28 @@ def generate_windows(spectrogram, window_size=25):
     :param spectrogram: a 2D array of shape (N_frequencies, N_samples), the spectrogram of a single
                             audio channel
     :param window_size: the width of windows yielded by the generator
+    :param batch_size: size of
     :return: a generator object yielding arrays of shape (N_frequencies, window_size)
     """
     spectrum_width, length = spectrogram.shape
+
+    windows = []
+    indices = []
     zeros_for_window = np.zeros((spectrum_width, window_size // 2))
-    data_for_windows = np.concatenate([zeros_for_window, spectrogram, zeros_for_window], 1)
+    data_for_windows = np.concatenate([zeros_for_window, spectrogram, zeros_for_window], axis=1)
 
     for i in range(length):
-        yield data_for_windows[:, i:i+window_size]
+        window = data_for_windows[:, i:i + window_size]
+        windows.append(np.expand_dims(window, axis=-1))
+        indices.append(i)
+
+        if len(windows) == batch_size:  # Если набрался батч
+            yield np.array(windows), indices
+            windows = []
+            indices = []
+
+    if windows:
+        yield np.array(windows), indices
 
 
 def get_ideal_binary_mask(mixture_spectrogram, vocals_spectrogram, cutoff=0.8):
