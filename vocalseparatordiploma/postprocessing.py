@@ -42,16 +42,6 @@ def apply_mask(mixture_spectrogram, binary_mask):
     return vocals, mixture_spectrogram - vocals
 
 
-def _get_inverse_mask(mask):
-    """
-    Reverse 0 and 1 in mask.
-    Used to get instrumental mask from vocal mask.
-
-    :return: 1 - mask
-    """
-    return 1 - mask
-
-
 def compute_inverse_stft(spectrogram, **kwargs):
     """
     Computes inverse STFT of a 2D array, returning the original signal.
