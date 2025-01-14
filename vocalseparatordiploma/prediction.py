@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from tensorflow.keras import Model
-from .preprocessing import compute_stft
+from .preprocessing import compute_stft, generate_windows
 from .postprocessing import compute_inverse_stft
 
 
@@ -22,7 +22,9 @@ def predict(model, spectrogram):
 
     :return:
     """
-    return model.predict(spectrogram)
+    return np.stack(
+        [model.predict(frame) for frame in generate_windows(spectrogram)]
+    )
 
 
 def predict_mocked(spectrogram):
