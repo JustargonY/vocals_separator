@@ -77,6 +77,22 @@ class ModelTest(unittest.TestCase):
         self.assertTrue((pred_right <= 1).all())
         self.assertTrue((pred_right >= 0).all())
 
+class STFTTest(unittest.TestCase):
+    def test(self):
+        path = os.path.join(os.path.dirname(__file__), "test.wav")
+        # only use the left channel
+        signal = preprocessing.read_track(path)[:, 0]
+
+        processed = preprocessing.compute_stft(signal)
+        reversed = postprocessing.compute_inverse_stft(processed)
+
+        # truncate in case extra samples have been created
+        # there should be at least len(signal) samples in reversed
+        self.assertTrue(len(signal) <= len(reversed))
+        max_difference = np.max(np.abs(signal - reversed[:len(signal)]))
+
+        self.assertLess(max_difference, 10**-5)
+
 
 if __name__ == "__main__":
     unittest.main()
