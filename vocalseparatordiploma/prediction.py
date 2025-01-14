@@ -12,7 +12,8 @@ def load_model():
     :return: the model
     """
     path = os.path.join(os.path.dirname(__file__), "model.keras")
-    model = Model.load_weights(path)
+    model = Model()
+    model.load_weights(filepath=path)
     return model
 
 
