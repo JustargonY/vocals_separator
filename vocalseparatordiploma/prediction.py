@@ -1,4 +1,6 @@
+import os
 import numpy as np
+from tensorflow.keras import Model
 from .preprocessing import compute_stft
 from .postprocessing import compute_inverse_stft
 
@@ -9,19 +11,18 @@ def load_model():
 
     :return: the model
     """
-    # TODO
+    path = os.path.join(os.path.dirname(__file__), "model.keras")
+    model = Model.load_weights(path)
+    return model
 
 
-# should invoke load_model at the start
-
-
-def predict(spectrogram):
+def predict(model, spectrogram):
     """
     Calls model.predict()
 
     :return:
     """
-    # TODO
+    return model.predict(spectrogram)
 
 
 def predict_mocked(spectrogram):
@@ -46,8 +47,10 @@ def predict_signal(input_signal: np.ndarray, **stft_params) -> tuple[np.ndarray,
     left = compute_stft(input_signal[:, 0], **stft_params)
     right = compute_stft(input_signal[:, 1], **stft_params)
 
-    mask_left = predict(left)
-    mask_right = predict(right)
+    model = load_model()
+
+    mask_left = predict(model, left)
+    mask_right = predict(model, right)
 
     vocal = np.stack((
         compute_inverse_stft(np.where(mask_left, left, 0), **stft_params),
