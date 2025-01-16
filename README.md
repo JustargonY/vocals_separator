@@ -24,8 +24,8 @@ pip install -r requirements.txt
 
 ## TODO
 
-- library interface
-- mocked functions
+- library interface (DONE)
+- mocked functions (DONE)
 - data preprocessing and loading using tf.data.Dataset (DONE)
 - model training
 - model output further processing (concatenating etc.)

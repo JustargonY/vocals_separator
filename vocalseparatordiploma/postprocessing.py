@@ -20,7 +20,7 @@ def write_track(data, filepath=None) -> None:
     if filepath is None:
         filepath = os.path.join(os.getcwd(), "output.wav")
 
-    wav.write(filepath, SAMPLE_RATE, data * SIGNAL_NORMALIZATION_CONSTANT)
+    wav.write(filepath, SAMPLE_RATE, (data * SIGNAL_NORMALIZATION_CONSTANT).astype(np.int16))
 
 
 def combine_prediction_outputs(outputs):
