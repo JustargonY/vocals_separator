@@ -1,38 +1,35 @@
+import os
 import numpy as np
+
+from tensorflow.keras import Model
 from .preprocessing import compute_stft, generate_windows
 from .postprocessing import compute_inverse_stft
 import tensorflow.keras.saving as saving
 
 
-def load_prediction_model():
+def load_model():
     """
     Loads prediction model from the file system into memory.
 
     :return: the model
     """
 
-    def extract_central_frame(x):
-        return x[:, 15, :]
-
-    # path should be changed
-    model = saving.load_model('C:/diploma/models/cnn_rnn_super.keras',
-                              custom_objects={"extract_central_frame": extract_central_frame})
-
+    path = os.path.join(os.path.dirname(__file__), "model.keras")
+    model = Model()
+    model.load_weights(filepath=path)
     return model
 
 
-# should invoke load_model at the start
-model = load_prediction_model()
-
-
-def predict_mocked(spectrogram: np.array):
+def predict(model, spectrogram):
     """
     Mocked version of _predict, returns random 0-1 vectors.
 
     :return:
     """
-    random_guess = np.random.uniform(0, 1, spectrogram.shape) > 0.5
-    return random_guess.astype(np.float32)
+
+    return np.stack(
+        [model.predict(frame) for frame in generate_windows(spectrogram)]
+    )
 
 
 def _get_inverse_mask(mask: np.array):
@@ -75,14 +72,10 @@ def predict_signal(input_signal: np.ndarray, **stft_params) -> tuple[np.ndarray,
     left = compute_stft(input_signal[:, 0], **stft_params)
     right = compute_stft(input_signal[:, 1], **stft_params)
 
-    mask_left = predict(np.abs(left))
-    mask_right = predict(np.abs(right))
+    model = load_model()
 
-    # mask_left = predict_mocked(left)
-    # mask_right = predict_mocked(right)
-
-    mask_left_instr = _get_inverse_mask(mask_left)
-    mask_right_instr = _get_inverse_mask(mask_right)
+    mask_left = predict(model, left)
+    mask_right = predict(model, right)
 
     vocal = np.stack((
         compute_inverse_stft(np.where(mask_left, left, 0), **stft_params),
